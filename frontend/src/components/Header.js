@@ -25,7 +25,7 @@ function Header(props) {
           </Link>
         }/>
 
-        <Route path='/react-mesto-auth' element={
+        <Route path='/' element={
           <div className='header__container'>
             <p className='header__email'>{props.email}</p>
             <Link to='sign-in' className='header__logout' onClick={props.onLogout}>
