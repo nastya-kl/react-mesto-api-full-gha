@@ -1,0 +1,20 @@
+.popup__delete-heading {
+  margin: 0 51px 38px 0;
+  color: black;
+  font-weight: 900;
+  font-size: 24px;
+  line-height: 29px;
+}
+
+@media screen and (max-width: 700px) {
+  .popup__delete-heading {
+    font-size: 18px;
+    line-height: 22px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .popup__delete-heading {
+    margin: 0 7px 38px 0;
+  }
+}

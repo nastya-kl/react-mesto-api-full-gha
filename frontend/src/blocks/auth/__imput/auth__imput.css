@@ -1,0 +1,14 @@
+.auth__imput {
+  color: #CCCCCC;
+  width: 100%;
+  margin-bottom: 30px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  min-height: 27px;
+  background-color: black;
+  border: none;
+  border-bottom: 2px solid #CCCCCC;
+  outline: 0;
+  padding: 0 0 2px;
+}

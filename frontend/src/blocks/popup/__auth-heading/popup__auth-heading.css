@@ -1,0 +1,15 @@
+.popup__auth-heading {
+  margin: 0 auto 23px;
+  color: black;
+  font-weight: 900;
+  font-size: 24px;
+  line-height: 29px;
+  text-align: center;
+}
+
+@media screen and (max-width: 600px) {
+  .popup__auth-heading {
+    font-size: 20px;
+    line-height: 24px;
+  }
+}
