@@ -1,12 +1,13 @@
 // Массив доменов, с которых разрешены кросс-доменные запросы
 const allowedCors = [
-  'https://praktikum.tk',
-  'http://praktikum.tk',
-  'localhost:3000',
+  'http://localhost:3001',
+  'https://localhost:3001',
+  'http://mesto.nastya-kll.nomoreparties.sbs',
+  'https://mesto.nastya-kll.nomoreparties.sbs',
 ];
 
 // eslint-disable-next-line consistent-return
-module.exports = (req, res, next) => {
+const cors = (req, res, next) => {
   const { origin } = req.headers;
   const { method } = req;
   const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
@@ -25,3 +26,5 @@ module.exports = (req, res, next) => {
 
   next();
 };
+
+module.exports = { cors };

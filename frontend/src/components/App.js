@@ -34,15 +34,17 @@ function App() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then(([userData, data]) => {
-        setCurrentUser(userData);
-        setCards(data);
+    if (loggedIn === true) {
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+      .then(([userData, cardsData]) => {
+        setCurrentUser(userData.data);
+        setCards(cardsData.data.reverse());
       })
       .catch((err) => {
         console.log(`Ошибка: ${err}`);
       })
-  }, []);
+    }
+  }, [loggedIn]);
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -69,8 +71,8 @@ function App() {
   function handleUpdateUser(userInfo) {
     setIsLoading(true)
     api.changeUserInfo(userInfo)
-      .then((data) => {
-        setCurrentUser(data);
+      .then((user) => {
+        setCurrentUser(user.data);
         closeAllPopups();
       })
       .catch((err) => {
@@ -82,8 +84,8 @@ function App() {
   function handleUpdateAvatar(userInfo) {
     setIsLoading(true)
     api.changeUserAvatar(userInfo)
-      .then((data) => {
-        setCurrentUser(data);
+      .then((user) => {
+        setCurrentUser(user.data);
         closeAllPopups();
       })
       .catch((err) => {
@@ -95,8 +97,8 @@ function App() {
   function handleAddPlaceSubmit(card) {
     setIsLoading(true)
     api.addNewCard(card)
-      .then((data) => {
-        setCards([data, ...cards]); 
+      .then((card) => {
+        setCards([card.data, ...cards]); 
         closeAllPopups();
       })
       .catch((err) => {
@@ -115,11 +117,11 @@ function App() {
   }
 
   function handleCardLike(card) {
-    const isLiked = card.likes.some(i => i._id === currentUser._id);
+    const isLiked = card.likes.some(i => i === currentUser._id);
 
     api.changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
-      setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+        setCards((state) => state.map((c) => c._id === card._id ? newCard.data : c));
       })
       .catch((err) => {
         console.log(`Ошибка: ${err}`);
@@ -158,8 +160,8 @@ function App() {
     auth.authorize(email, password)
     .then((res) => {
       if(res.token) {
-        setUserEmail(`${email}`);
         localStorage.setItem("jwt", res.token);
+        setUserEmail(`${email}`);
         setLoggedIn(true);
         navigate("/", {replace: true})
       }
@@ -189,8 +191,10 @@ function App() {
     };
   }
 
+  
   React.useEffect(() => {
     handleTokenCheck();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function handleLogout() {
@@ -216,7 +220,7 @@ function App() {
             onCardClick={handleCardClick}
             onCardLike={handleCardLike}
             onCardDelete={handleConfirmPopupclick}
-            cards={cards}          
+            cards={cards}
             loggedIn={loggedIn}/>}
           />
 

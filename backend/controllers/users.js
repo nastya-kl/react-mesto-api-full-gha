@@ -99,13 +99,15 @@ const login = (req, res, next) => {
         { expiresIn: '7d' },
       );
 
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-          sameSite: true,
-        })
-        .send({ token });
+      // Если сохранять токен в куки
+      // res
+      //   .cookie('jwt', token, {
+      //     maxAge: 3600000 * 24 * 7,
+      //     httpOnly: true,
+      //     sameSite: true,
+      //   })
+
+      return res.send({ token });
     })
     .catch(next);
 };

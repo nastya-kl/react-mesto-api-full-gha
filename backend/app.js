@@ -4,17 +4,18 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { errors } = require('celebrate');
-const cookieParser = require('cookie-parser');
 
 const router = require('./routes/index');
 const errorHandler = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { PORT, DB_URL } = require('./utils/utils');
-const cors = require('./middlewares/cors');
+const { cors } = require('./middlewares/cors');
 
 const app = express();
 app.use(express.json());
-app.use(cors({ credentials: true }));
+app.use(helmet());
+
+app.use(cors);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -24,8 +25,6 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-app.use(helmet());
-app.use(cookieParser());
 
 mongoose.connect(DB_URL, {
   useNewUrlParser: true,

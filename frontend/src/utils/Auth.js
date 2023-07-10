@@ -37,20 +37,19 @@ class Auth {
     return fetch(`${this.baseUrl}/users/me`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
         "Authorization" : `Bearer ${token}`
-      }
+      },
     })
       .then(this._checkResponse);
   }
 }
 
 const auth = new Auth({
-  baseUrl: 'http://localhost:3001',
+  baseUrl: 'http://localhost:3000',
   headers: {
+    "Accept": "application/json",
     'Content-Type': 'application/json'
   },
-  credentials: "include",
 });
 
 export default auth;
