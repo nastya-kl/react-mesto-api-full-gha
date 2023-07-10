@@ -1,7 +1,6 @@
 class Auth {
   constructor(config) {
-    this.baseUrl = config.baseUrl;
-    this.headers = config.headers;
+    this.baseUrl = 'https://api.mesto.nastya-kll.nomoredomains.work';
   }
 
   _checkResponse(res) {
@@ -16,7 +15,10 @@ class Auth {
   register(email, password) {
     return fetch(`${this.baseUrl}/signup`, {
       method: "POST",
-      headers: this.headers,
+      headers: {
+        "Accept": "application/json",
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({email, password})
     })
       .then(this._checkResponse);
@@ -26,7 +28,10 @@ class Auth {
   authorize(email, password) {
     return fetch(`${this.baseUrl}/signin`, {
       method: "POST",
-      headers: this.headers,
+      headers: {
+        "Accept": "application/json",
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({email, password})
     })
       .then(this._checkResponse);
@@ -37,6 +42,8 @@ class Auth {
     return fetch(`${this.baseUrl}/users/me`, {
       method: "GET",
       headers: {
+        "Accept": "application/json",
+        'Content-Type': 'application/json',
         "Authorization" : `Bearer ${token}`
       },
     })
@@ -44,12 +51,6 @@ class Auth {
   }
 }
 
-const auth = new Auth({
-  baseUrl: 'http://localhost:3000',
-  headers: {
-    "Accept": "application/json",
-    'Content-Type': 'application/json'
-  },
-});
+const auth = new Auth();
 
 export default auth;

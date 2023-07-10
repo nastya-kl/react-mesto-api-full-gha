@@ -1,6 +1,6 @@
 class Api {
   constructor() {
-    this.baseUrl = 'http://localhost:3000';
+    this.baseUrl = 'https://api.mesto.nastya-kll.nomoredomains.work';
   }
 
   _checkResponse(res) {
