@@ -1,3 +1,7 @@
+const mongoose = require('mongoose');
+
+const { ValidationError } = mongoose.Error;
+const { CastError } = mongoose.Error;
 const Card = require('../modules/card');
 const NotFound = require('../errors/NotFound');
 const BadRequest = require('../errors/BadRequest');
@@ -16,7 +20,7 @@ const createCard = (req, res, next) => {
   })
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof ValidationError) {
         next(new BadRequest('Переданы некорректные данные при создании карточки'));
       } else {
         next(err);
@@ -31,15 +35,14 @@ const deleteCard = (req, res, next) => {
   Card.findById(cardId)
     .orFail(() => new NotFound('Карточка с указанным id не найдена'))
     .then((card) => {
-      if (card.owner.equals(ownerId)) {
-        Card.deleteOne(card)
-          .then(() => res.send({ message: `Карточка ${card.name} удалена` }));
-      } else {
+      if (!card.owner.equals(ownerId)) {
         next(new Forbidden('Невозможно удалить карточку, созданную другим пользователем'));
       }
+      return Card.deleteOne(card)
+        .then(() => res.send({ message: `Карточка ${card.name} удалена` }));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof CastError) {
         next(new BadRequest('Переданы некорректные данные для удаления карточки'));
       } else {
         next(err);
@@ -59,7 +62,7 @@ const likeCard = (req, res, next) => {
     .orFail(() => new NotFound('Карточка с указанным id не найдена'))
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof CastError) {
         next(new BadRequest('Переданы некорректные данные для постановки лайка'));
       } else {
         next(err);
@@ -79,7 +82,7 @@ const dislikeCard = (req, res, next) => {
     .orFail(() => new NotFound('Карточка с указанным id не найдена'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof CastError) {
         next(new BadRequest('Переданы некорректные данные для снятия лайка'));
       } else {
         next(err);

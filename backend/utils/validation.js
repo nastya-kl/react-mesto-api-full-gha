@@ -8,15 +8,15 @@ const regex = /https?:\/\/(www\.)?[-\w@:%\.\+~#=]{1,256}\.[a-z0-9()]{1,6}\b([-\w
 // getUserById
 const userIdValidation = celebrate({
   params: Joi.object().keys({
-    id: Joi.string().alphanum().min(24).hex(),
+    id: Joi.string().min(24).hex().required(),
   }),
 });
 
 // updateProfile
 const userProfileInfoValidation = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    name: Joi.string().min(2).max(30).required(),
+    about: Joi.string().min(2).max(30).required(),
   }),
 });
 
@@ -49,7 +49,7 @@ const signUpValidation = celebrate({
 // deleteCard, likeCard, dislikeCard
 const cardIdValidation = celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().min(24),
+    cardId: Joi.string().min(24).hex().required(),
   }),
 });
 

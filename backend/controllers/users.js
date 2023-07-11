@@ -1,3 +1,7 @@
+const mongoose = require('mongoose');
+
+const { ValidationError } = mongoose.Error;
+const { CastError } = mongoose.Error;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../modules/user');
@@ -25,7 +29,7 @@ const createUser = (req, res, next) => {
       name, about, avatar, email,
     }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof ValidationError) {
         next(new BadRequest('Переданы некорректные данные при создании профиля'));
       } else if (err.code === 11000) {
         next(new Conflict('Пользователь с таким Email уже зарегистрирован'));
@@ -35,14 +39,13 @@ const createUser = (req, res, next) => {
     });
 };
 
-const getUserById = (req, res, next) => {
-  const userId = req.params.id;
-
+// Поиск пользователя по ID
+const findUserById = (req, res, next, userId) => {
   User.findById(userId)
     .orFail(() => new NotFound('Пользователь с таким id не найден'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof CastError) {
         next(new BadRequest('Введён некорректный id'));
       } else {
         next(err);
@@ -50,18 +53,28 @@ const getUserById = (req, res, next) => {
     });
 };
 
-const updateProfile = (req, res, next) => {
-  const userId = req.user._id;
-  const { name, about } = req.body;
+const getUserById = (req, res, next) => {
+  const userId = req.params.id;
+  findUserById(req, res, next, userId);
+};
 
-  User.findByIdAndUpdate(userId, { name, about }, {
+const getLoggedUser = (req, res, next) => {
+  const userId = req.user._id;
+  findUserById(req, res, next, userId);
+};
+
+// Изменение данных пользоателя по ID
+const changeUserInfo = (req, res, next, data) => {
+  const userId = req.user._id;
+
+  User.findByIdAndUpdate(userId, { data }, {
     new: true,
     runValidators: true,
   })
     .orFail(() => new NotFound('Пользователь с таким id не найден'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof ValidationError) {
         next(new BadRequest('Переданы некорректные данные при обновлении профиля'));
       } else {
         next(err);
@@ -69,25 +82,17 @@ const updateProfile = (req, res, next) => {
     });
 };
 
-const updateAvatar = (req, res, next) => {
-  const userId = req.user._id;
-  const { avatar } = req.body;
-
-  User.findByIdAndUpdate(userId, { avatar }, {
-    new: true,
-    runValidators: true,
-  })
-    .orFail(() => new NotFound('Пользователь с таким id не найден'))
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданы некорректные данные при обновлении аватара'));
-      } else {
-        next(err);
-      }
-    });
+const updateProfile = (req, res, next) => {
+  const { name, about } = req.body;
+  changeUserInfo(req, res, next, { name, about });
 };
 
+const updateAvatar = (req, res, next) => {
+  const { avatar } = req.body;
+  changeUserInfo(req, res, next, { avatar });
+};
+
+// Авторизованный пользователь
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
@@ -99,30 +104,9 @@ const login = (req, res, next) => {
         { expiresIn: '7d' },
       );
 
-      // Если сохранять токен в куки
-      // res
-      //   .cookie('jwt', token, {
-      //     maxAge: 3600000 * 24 * 7,
-      //     httpOnly: true,
-      //     sameSite: true,
-      //   })
-
       return res.send({ token });
     })
     .catch(next);
-};
-
-const getLoggedUser = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail(() => new NotFound('Пользователь с таким id не найден'))
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequest('Передан некорректный id пользоателя'));
-      } else {
-        next(err);
-      }
-    });
 };
 
 module.exports = {
