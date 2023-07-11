@@ -67,7 +67,7 @@ const getLoggedUser = (req, res, next) => {
 const changeUserInfo = (req, res, next, data) => {
   const userId = req.user._id;
 
-  User.findByIdAndUpdate(userId, { data }, {
+  User.findByIdAndUpdate(userId, data, {
     new: true,
     runValidators: true,
   })
