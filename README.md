@@ -7,7 +7,7 @@
 
 ## Ссылки на проект
 
-IP-адрес 62.84.118.213
+IP-адрес 158.160.98.15
 
 Frontend https://mesto.nastya-kll.nomoreparties.sbs
 
