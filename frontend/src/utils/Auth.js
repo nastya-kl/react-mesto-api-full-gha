@@ -1,5 +1,5 @@
 class Auth {
-  constructor(config) {
+  constructor() {
     this.baseUrl = 'https://api.mesto.nastya-kll.nomoredomains.work';
   }
 
